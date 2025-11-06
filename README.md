@@ -3,40 +3,35 @@
 [![Email](https://img.shields.io/badge/email-connect-red.svg)](https://groups.google.com/g/divin5-tcie)
 
 
-DIVIN5 TICE is a free platform used for threat detection. It is capable of detecting malicious IP Address's multiple verified databases across the internet.
+TICE is a powerful, automated tool designed to solve a critical problem for security analysts: **data fragmentation**. When investigating a suspicious IP address, analysts must manually check multiple, siloed threat intelligence feeds (like AbuseIPDB, VirusTotal, etc.), wasting valuable time and making it difficult to see the full picture.
 
-# DIVIN5 TICE capabilities
+TICE is a **Correlation Engine** that automates this entire process. It queries multiple data sources simultaneously, then intelligently normalizes, de-duplicates, and analyzes the results to provide a single, high-confidence, actionable report.
 
-A brief presentation of some of the more common use cases of the DIVIN5 TICE.
+This engine is designed to power dashboards, security playbooks (SOAR), and the **Dual-Persona Cybersecurity AI Agent** for providing both public-facing advice and deep-level intelligence for officials.
 
+---
 
-**Log data analysis**
+## 🚀 Key Features
 
-Wazuh agents read operating system and application logs, and securely forward them to a central manager for rule-based analysis and storage. When no agent is deployed, the server can also receive data via syslog from network devices or applications.
+* **Multi-Source Aggregation:** Automatically queries a wide range of threat intelligence feeds from a single input IP.
+* **Intelligent Correlation:** Doesn't just list data. TICE calculates a composite **"Correlation Value"** (a unified risk score) based on multi-source consensus, threat type, and recency.
+* **Structured Database Output:** All findings are normalized and saved in a structured format, perfect for feeding into a database (e.g., SQLite, PostgreSQL, JSON) for historical analysis and dashboarding.
+* **Dual-Persona Ready:** The engine provides two levels of output, making it the perfect backend for an AI agent:
+    * **Public Data:** A simple, clear verdict and actionable defensive steps.
+    * **Official Data:** A deep dossier for attribution, including geolocation, ISP/ASN, ownership, and historical activity.
+* **Extensible:** Built in a modular way to easily add new threat intelligence sources.
 
-The Wazuh rules help make you aware of application or system errors, misconfigurations, attempted and/or successful malicious activities, policy violations and a variety of other security and operational issues.
+---
 
-**File integrity monitoring**
+## 🔌 Supported Data Sources
 
-Wazuh monitors the file system, identifying changes in content, permissions, ownership, and attributes of files that you need to keep an eye on. In addition, it natively identifies users and applications used to create or modify files.
+TICE correlates data from top-tier public intelligence feeds, including:
 
-File integrity monitoring capabilities can be used in combination with threat intelligence to identify threats or compromised hosts. In addition, several regulatory compliance standards, such as PCI DSS, require it.
-
-**Vulnerability detection**
-
-Wazuh agents pull software inventory data and send this information to the server, where it is correlated with continuously updated CVE (Common Vulnerabilities and Exposure) databases, in order to identify well-known vulnerable software.
-
-Automated vulnerability assessment helps you find the weak spots in your critical assets and take corrective action before attackers exploit them to sabotage your business or steal confidential data.
-
-**Configuration assessment**
-
-Wazuh monitors system and application configuration settings to ensure they are compliant with your security policies, standards and/or hardening guides. Agents perform periodic scans to detect applications that are known to be vulnerable, unpatched, or insecurely configured.
-
-Additionally, configuration checks can be customized, tailoring them to properly align with your organization. Alerts include recommendations for better configuration, references and mapping with regulatory compliance.
-
-**Incident response**
-
-Wazuh provides out-of-the-box active responses to perform various countermeasures to address active threats, such as blocking access to a system from the threat source when certain criteria are met.
+* ✅ **AbuseIPDB:** Gathers reports from a global community of webmasters and security analysts.
+* ✅ **VirusTotal:** Checks the IP against over 90+ antivirus scanners and blocklisting services.
+* ✅ **AlienVault OTX:** Correlates the IP with known threat campaigns and "Pulses."
+* ✅ **Spamhaus:** Checks against high-reputation spam and malware blocklists.
+* *(And more...)*
 
 In addition, Wazuh can be used to remotely run commands or system queries, identifying indicators of compromise (IOCs) and helping perform other live forensics or incident response tasks.
 
