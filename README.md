@@ -1,6 +1,6 @@
 #DIVIN5 TICE
 
-[![Email](https://img.shields.io/badge/email-connect-red.svg)]([https://groups.google.com/g/divin5-tcie)
+[![Email](https://img.shields.io/badge/email-connect-red.svg)](https://groups.google.com/g/divin5-tcie)
 
 
 DIVIN5 TICE is a free platform used for threat detection. It is capable of detecting malicious IP Address's multiple verified databases across the internet.
