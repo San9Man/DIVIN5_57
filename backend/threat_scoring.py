@@ -4,7 +4,7 @@ def calculate_score(data):
     - Each source has weight
     - Each threat type counts as points
     """
-    weights = {"AbuseIPDB": 0.4, "VirusTotal": 0.4, "AlienVault": 0.2}
+    weights = {"AbuseIPDB": 0.4, "VirusTotal": 0.4, "AlienVault": 0.2, "AlienVault OTX": 0.2}
     score = 0
     
     for source, details in data.items():
