@@ -3,7 +3,7 @@
 [![Email](https://img.shields.io/badge/email-connect-red.svg)](https://groups.google.com/g/divin5-tcie)
 
 
-TICE is a powerful, automated tool designed to solve a critical problem for security analysts: **data fragmentation**. When investigating a suspicious IP address, analysts must manually check multiple, siloed threat intelligence feeds (like AbuseIPDB, VirusTotal, etc.), wasting valuable time and making it difficult to see the full picture.
+DIVIN5 TICE is a powerful, automated tool designed to solve a critical problem for security analysts: **data fragmentation**. When investigating a suspicious IP address, analysts must manually check multiple, siloed threat intelligence feeds (like AbuseIPDB, VirusTotal, etc.), wasting valuable time and making it difficult to see the full picture.
 
 TICE is a **Correlation Engine** that automates this entire process. It queries multiple data sources simultaneously, then intelligently normalizes, de-duplicates, and analyzes the results to provide a single, high-confidence, actionable report.
 
