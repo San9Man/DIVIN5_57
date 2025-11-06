@@ -32,7 +32,3 @@ TICE correlates data from top-tier public intelligence feeds, including:
 * ✅ **AlienVault OTX:** Correlates the IP with known threat campaigns and "Pulses."
 * ✅ **Spamhaus:** Checks against high-reputation spam and malware blocklists.
 * *(And more...)*
-
-In addition, Wazuh can be used to remotely run commands or system queries, identifying indicators of compromise (IOCs) and helping perform other live forensics or incident response tasks.
-
-
