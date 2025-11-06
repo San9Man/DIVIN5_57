@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TICE Dashboard - Threat Intelligence</title>
+    <style>
+        /* ========================================
+         CSS (Styling)
+         Inspired by the Wazuh dashboard's dark,
+         modular, and responsive theme.
+         ========================================
+        */
+
+        /* --- 1. Root Variables & Global Styles --- */
+        :root {
+            --bg-primary: #181a1c;       /* Dark background (main) */
+            --bg-secondary: #272a2e;    /* Lighter background (widgets) */
+            --bg-tertiary: #3a3f44;      /* Hover/active background */
+            --border-color: #4a4f54;
+            --text-primary: #e6e6e6;    /* Main text */
+            --text-secondary: #b0b8c2;  /* Sub-text */
+            --accent-blue: #00a0ff;
+            --accent-green: #00bf9a;
+            --accent-yellow: #fecf51;
+            --accent-red: #d94251;
+            
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --header-height: 60px;
+            --sidebar-width: 240px;
+            --sidebar-width-collapsed: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+        }
+
+        /* --- 2. Main Layout (Sidebar + Content) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header .logo-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .sidebar-header .logo-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding-top: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--accent-blue);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-right: 18px;
+            width: 20px; /* Aligns text */
+            text-align: center;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 3. Top Header Bar --- */
+        .header {
+            height: var(--header-height);
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        
+        .menu-toggle {
+            display: none; /* Hidden by default, shown on mobile */
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* This is the IP Search Form from PRD 4.1 */
+        .search-form {
+            display: flex;
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-right: none;
+            color: var(--text-primary);
+            border-radius: 6px 0 0 6px;
+            outline: none;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background-color: var(--accent-blue);
+            color: #fff;
+            border: 1px solid var(--accent-blue);
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-button:hover {
+            background-color: #008cd6;
+        }
+
+        /* --- 4. Main Dashboard Area (Widgets) --- */
+        .dashboard-main {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .report-header {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            margin-bottom: 20px;
+        }
+        
+        .report-header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .report-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .report-header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Widget Grid (PRD 4.5) */
+        .widget-grid {
+            display: grid;
+            grid-gap: 20px;
+            /* Responsive grid: 3 cols on desktop, 2 on tablet, 1 on mobile */
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+        }
+        
+        .widget-grid.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .widget {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden; /* For table styling */
+        }
+
+        .widget-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .widget-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .widget-content {
+            padding: 20px;
+        }
+        
+        /* Widget: Risk Score (PRD 4.4, 4.5) */
+        #risk-score .widget-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        
+        .score-gauge {
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        .score-gauge-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            /* Background track */
+            background: var(--bg-tertiary); 
+            /* This gradient creates the progress ring */
+            background-image: conic-gradient(
+                var(--accent-red) 0% var(--score-percent, 0%), 
+                var(--bg-tertiary) var(--score-percent, 0%) 100%
+            );
+            transition: background-image 1s ease-in-out;
+        }
+        
+        .score-gauge-inner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-red);
+            transition: color 1s ease-in-out;
+        }
+
+        .score-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .verdict-container {
+            text-align: left;
+        }
+        
+        .verdict-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        
+        .verdict-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        
+        .verdict-value.benign { background-color: rgba(0, 191, 154, 0.2); color: var(--accent-green); }
+        .verdict-value.suspicious { background-color: rgba(254, 207, 81, 0.2); color: var(--accent-yellow); }
+        .verdict-value.malicious { background-color: rgba(217, 66, 81, 0.2); color: var(--accent-red); }
+
+        /* Widget: IP Details (PRD 4.2, 4.5) */
+        .details-list {
+            list-style: none;
+        }
+
+        .details-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+        
+        .details-list li:last-child {
+            border-bottom: none;
+        }
+
+        .details-list .key {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .details-list .value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        /* Widget: Threat Categories (PRD 4.4, 4.5) */
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* Widget: Data Tables (PRD 4.5) */
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* For mobile */
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            background-color: var(--bg-tertiary);
+            white-space: nowrap;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+        
+        .data-table td .status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .data-table td .status.malicious { background-color: rgba(217, 66, 81, 0.2); color: var(--accent-red); }
+        .data-table td .status.suspicious { background-color: rgba(254, 207, 81, 0.2); color: var(--accent-yellow); }
+        .data-table td .status.benign { background-color: rgba(0, 191, 154, 0.2); color: var(--accent-green); }
+        
+        .data-table td .link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .data-table td .link:hover { text-decoration: underline; }
+
+        /* Full-width widget */
+        .widget.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* --- 5. Responsive Design --- */
+        
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: var(--sidebar-width-collapsed);
+            }
+            
+            .sidebar:hover {
+                width: var(--sidebar-width);
+            }
+
+            .sidebar-header .logo-text,
+            .sidebar .nav-text {
+                /* Hide text when collapsed, but allow hover to show it */
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+            
+            .sidebar:hover .logo-text,
+            .sidebar:hover .nav-text {
+                opacity: 1;
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-width-collapsed);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-width);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            }
+            
+            .sidebar-header .logo-text,
+            .sidebar .nav-text {
+                opacity: 1; /* Always show text on mobile */
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+            
+            .menu-toggle {
+                display: block;
+                margin-right: 15px;
+            }
+            
+            .search-form {
+                max-width: none;
+            }
+
+            .dashboard-main {
+                padding: 15px;
+            }
+
+            .widget-grid {
+                grid-template-columns: 1fr; /* Stack widgets */
+            }
+            
+            #risk-score .widget-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="logo-icon">🛡️</span>
+            <span class="logo-text">TICE</span>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-text">Threat Investigation</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="main-content" id="main-content">
+        
+        <header class="header">
+            <button class="menu-toggle" id="menu-toggle">☰</button>
+            
+            <form class="search-form" id="search-form">
+                <input type="text" class="search-input" id="ip-input" placeholder="Enter IP Address to investigate (e.g., 1.1.1.1 or 91.198.174.192)">
+                <button type="submit" class="search-button">Analyze</button>
+            </form>
+            
+            </header>
+
+        <main class="dashboard-main">
+            
+            <div class="report-header" id="report-header">
+                <h1 id="report-title">Threat Report: 1.1.1.1</h1>
+                <p id="report-subtitle">Analysis based on 4 aggregated threat feeds.</p>
+            </div>
+
+            <div class="widget-grid" id="widget-grid">
+
+                <div class="widget" id="risk-score">
+                    <div class="widget-header">
+                        <h3>Composite Threat Score & Verdict</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="score-gauge">
+                            <div class="score-gauge-circle" id="score-gauge-circle"></div>
+                            <div class="score-gauge-inner">
+                                <span class="score-value" id="score-value">0</span>
+                                <span class="score-text">/ 100</span>
+                            </div>
+                        </div>
+                        <div class="verdict-container">
+                             <div class="verdict-label">Risk Verdict</div>
+                             <div class="verdict-value" id="verdict-value">Unknown</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget" id="ip-details">
+                    <div class="widget-header">
+                        <h3>IP Details</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul class="details-list">
+                            <li><span class="key">IP Address</span> <span class="value" id="detail-ip">---</span></li>
+                            <li><span class="key">Geolocation</span> <span class="value" id="detail-geo">---</span></li>
+                            <li><span class="key">ASN</span> <span class="value" id="detail-asn">---</span></li>
+                            <li><span class="key">First Reported</span> <span class="value" id="detail-first-seen">---</span></li>
+                            <li><span class="key">Last Reported</span> <span class="value" id="detail-last-seen">---</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="widget" id="threat-categories">
+                    <div class="widget-header">
+                        <h3>Identified Threat Categories</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="category-tags" id="category-tags">
+                            <span class="tag">No data</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget full-width" id="related-entities">
+                    <div class="widget-header">
+                        <h3>Related Entities (Domains/URLs)</h3>
+                    </div>
+                    <div class="widget-content" style="padding: 0;">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Entity (Domain/URL)</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>First Seen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="related-entities-table">
+                                    <tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No data to display.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget full-width" id="source-evidence">
+                    <div class="widget-header">
+                        <h3>Per-Source Evidence</h3>
+                    </div>
+                    <div class="widget-content" style="padding: 0;">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Source</th>
+                                        <th>Finding</th>
+                                        <th>Reported By</th>
+                                        <th>Reference</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="source-evidence-table">
+                                    <tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No data to display.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Sidebar & Mobile Menu Toggle ---
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+            
+            // --- Search Form Submission (PRD 4.1) ---
+            const searchForm = document.getElementById('search-form');
+            const ipInput = document.getElementById('ip-input');
+            const reportHeader = document.getElementById('report-header');
+            const widgetGrid = document.getElementById('widget-grid');
+            
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // Prevent form from reloading page
+                const ip = ipInput.value.trim();
+                
+                if (ip) {
+                    // Show loading state (optional)
+                    // ...
+                    
+                    // In a real app, this calls your backend API.
+                    // We will simulate it with mock data.
+                    fetchMockThreatData(ip);
+                }
+            });
+            
+            /**
+             * MOCK FUNCTION: Simulates fetching data from your TICE backend.
+             * This function maps to PRD 4.1-4.5.
+             */
+            function fetchMockThreatData(ip) {
+                // Show a loading/processing state
+                reportHeader.classList.remove('visible');
+                widgetGrid.classList.remove('visible');
+                
+                // Simulate network/API delay (PRD 5.0)
+                setTimeout(() => {
+                    let mockData;
+                    
+                    // Generate different mock data based on the IP
+                    if (ip.startsWith('91.198.174') || ip.startsWith('185.159.82')) {
+                        // Known Malicious IP (e.g., Wikipedia's, or a known C2)
+                        mockData = {
+                            ip: ip,
+                            score: 92,
+                            verdict: "Malicious",
+                            details: {
+                                geo: "Amsterdam, Netherlands",
+                                asn: "AS60781 (Contabo GmbH)",
+                                firstSeen: "2022-01-15",
+                                lastSeen: "2025-11-05"
+                            },
+                            categories: ["Botnet C2", "Phishing", "Spam", "Proxy"],
+                            relatedEntities: [
+                                { entity: "malicious-loader.exe", type: "URL", status: "Malicious", firstSeen: "2025-11-01" },
+                                { entity: "bad-domain-name.xyz", type: "Domain", status: "Malicious", firstSeen: "2025-10-28" }
+                            ],
+                            sourceEvidence: [
+                                { source: "AbuseIPDB", finding: "Spam, SSH Bruteforce", reports: "1152", link: "#" },
+                                { source: "AlienVault OTX", finding: "Malicious (C2)", reports: "18 Pulses", link: "#" },
+                                { source: "VirusTotal", finding: "Malicious", reports: "14/90", link: "#" },
+                                { source: "Spamhaus", finding: "On CSS, PBL", reports: "Listed", link: "#" }
+                            ]
+                        };
+                    } else if (ip.startsWith('1.1.1.1') || ip.startsWith('8.8.8.8')) {
+                         // Known Benign IP (e.g., Cloudflare/Google DNS)
+                         mockData = {
+                            ip: ip,
+                            score: 5,
+                            verdict: "Benign",
+                            details: {
+                                geo: "Sydney, Australia",
+                                asn: "AS13335 (Cloudflare)",
+                                firstSeen: "2018-04-01",
+                                lastSeen: "2025-11-06"
+                            },
+                            categories: ["CDN", "DNS"],
+                            relatedEntities: [
+                                { entity: "cloudflare.com", type: "Domain", status: "Benign", firstSeen: "2018-04-01" },
+                            ],
+                            sourceEvidence: [
+                                { source: "AbuseIPDB", finding: "Benign", reports: "0", link: "#" },
+                                { source: "AlienVault OTX", finding: "Benign", reports: "0 Pulses", link: "#" },
+                                { source: "VirusTotal", finding: "Benign", reports: "0/90", link: "#" },
+                                { source: "Spamhaus", finding: "Not Listed", reports: "N/A", link: "#" }
+                            ]
+                        };
+                    } else {
+                        // Default / Suspicious
+                        mockData = {
+                            ip: ip,
+                            score: 45,
+                            verdict: "Suspicious",
+                            details: {
+                                geo: "Unknown",
+                                asn: "Unknown",
+                                firstSeen: "2025-11-01",
+                                lastSeen: "2025-11-02"
+                            },
+                            categories: ["Proxy/Anonymizer"],
+                            relatedEntities: [],
+                            sourceEvidence: [
+                                { source: "AbuseIPDB", finding: "Web Scanner", reports: "12", link: "#" },
+                                { source: "AlienVault OTX", finding: "Unknown", reports: "0 Pulses", link: "#" },
+                                { source: "VirusTotal", finding: "Benign", reports: "0/90", link: "#" }
+                            ]
+                        };
+                    }
+                    
+                    // Populate the dashboard with the new data
+                    populateDashboard(mockData);
+
+                    // Fade in the results
+                    reportHeader.classList.add('visible');
+                    widgetGrid.classList.add('visible');
+
+                }, 800); // 0.8 second delay
+            }
+            
+            /**
+             * Populates all dashboard widgets with data.
+             * This maps to PRD 4.5 "Summarized Threat Attribution Report"
+             */
+            function populateDashboard(data) {
+                // --- Report Header ---
+                document.getElementById('report-title').textContent = `Threat Report: ${data.ip}`;
+                document.getElementById('report-subtitle').textContent = `Analysis based on ${data.sourceEvidence.length} aggregated threat feeds.`;
+                
+                // --- Widget 1: Risk Score (PRD 4.4) ---
+                const scoreValueEl = document.getElementById('score-value');
+                const scoreGaugeEl = document.getElementById('score-gauge-circle');
+                const verdictValueEl = document.getElementById('verdict-value');
+                
+                scoreValueEl.textContent = data.score;
+                
+                // Set gauge percentage
+                scoreGaugeEl.style.setProperty('--score-percent', `${data.score}%`);
+                
+                // Set colors based on score
+                let scoreColor = 'var(--accent-green)';
+                if (data.score > 40) scoreColor = 'var(--accent-yellow)';
+                if (data.score > 75) scoreColor = 'var(--accent-red)';
+                
+                scoreGaugeEl.style.backgroundImage = `conic-gradient(${scoreColor} 0% ${data.score}%, var(--bg-tertiary) ${data.score}% 100%)`;
+                scoreValueEl.style.color = scoreColor;
+
+                // Set verdict (PRD 4.4)
+                verdictValueEl.textContent = data.verdict;
+                verdictValueEl.className = `verdict-value ${data.verdict.toLowerCase()}`;
+                
+                // --- Widget 2: IP Details (PRD 4.2) ---
+                document.getElementById('detail-ip').textContent = data.ip;
+                document.getElementById('detail-geo').textContent = data.details.geo;
+                document.getElementById('detail-asn').textContent = data.details.asn;
+                document.getElementById('detail-first-seen').textContent = data.details.firstSeen;
+                document.getElementById('detail-last-seen').textContent = data.details.lastSeen;
+                
+                // --- Widget 3: Threat Categories (PRD 4.4) ---
+                const tagsContainer = document.getElementById('category-tags');
+                tagsContainer.innerHTML = ''; // Clear old tags
+                if (data.categories.length > 0) {
+                    data.categories.forEach(category => {
+                        tagsContainer.innerHTML += `<span class="tag">${category}</span>`;
+                    });
+                } else {
+                    tagsContainer.innerHTML = `<span class="tag">No categories found</span>`;
+                }
+                
+                // --- Widget 4: Related Entities (PRD 4.5) ---
+                const entitiesTable = document.getElementById('related-entities-table');
+                entitiesTable.innerHTML = ''; // Clear old rows
+                if (data.relatedEntities.length > 0) {
+                    data.relatedEntities.forEach(item => {
+                        entitiesTable.innerHTML += `
+                            <tr>
+                                <td>${item.entity}</td>
+                                <td>${item.type}</td>
+                                <td><span class="status ${item.status.toLowerCase()}">${item.status}</span></td>
+                                <td>${item.firstSeen}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    entitiesTable.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No related entities found.</td></tr>`;
+                }
+
+                // --- Widget 5: Source Evidence (PRD 4.5, 7.2) ---
+                const evidenceTable = document.getElementById('source-evidence-table');
+                evidenceTable.innerHTML = ''; // Clear old rows
+                if (data.sourceEvidence.length > 0) {
+                    data.sourceEvidence.forEach(item => {
+                        evidenceTable.innerHTML += `
+                            <tr>
+                                <td>${item.source}</td>
+                                <td>${item.finding}</td>
+                                <td>${item.reports}</td>
+                                <td><a href="${item.link}" class="link" target="_blank">View</a></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                     evidenceTable.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No source evidence found.</td></tr>`;
+                }
+            }
+            
+            // Load initial mock data for "1.1.1.1" on page load
+            fetchMockThreatData('1.1.1.1');
+        });
+    </script>
+</body>
+</html>
