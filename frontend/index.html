@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divin5 TICE</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>AI-Driven Threat Intelligence Correlation Engine</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -37,8 +36,9 @@
                     <input type="text" id="targetInput" placeholder="Enter IP, hash, domain, or URL">
                 </div>
 
-                <button id="analyzeBtn" onclick="analyzeTarget()">
-                    <span id="analyzeText">Analyze Threat</span>
+                <!-- Start Button -->
+                <button id="startBtn" onclick="analyzeTarget()">
+                    <span id="startText">Start Analysis</span>
                 </button>
 
                 <div class="stat-grid">
@@ -75,20 +75,7 @@
                     </div>
                 </div>
 
-                <div class="timeline" id="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-time">14:23:45</div>
-                        <div class="timeline-content">Suspicious connection from 203.0.113.42</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">14:22:18</div>
-                        <div class="timeline-content">Malware hash detected: 5d41402abc4b...</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">14:20:55</div>
-                        <div class="timeline-content">Brute force attempt blocked</div>
-                    </div>
-                </div>
+                <div class="timeline" id="timeline"></div>
             </div>
 
             <!-- Active Threat Intelligence APIs -->
@@ -110,14 +97,6 @@
                         <span>AlienVault OTX</span>
                         <span class="api-status active"></span>
                     </li>
-                    <li id="api-shodan">
-                        <span>Shodan</span>
-                        <span class="api-status active"></span>
-                    </li>
-                    <li id="api-urlhaus">
-                        <span>URLhaus</span>
-                        <span class="api-status active"></span>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -128,10 +107,10 @@
                 <span class="card-title">📊 Threat Analysis Dashboard</span>
                 <button id="exportBtn" onclick="exportResults()" style="width: auto; padding: 6px 12px; font-size: 13px;">Export JSON</button>
             </div>
-            
-            <!-- Section 1: Key Metrics Overview -->
+
+            <!-- Key Metrics Overview -->
             <div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">1️⃣ Key Metrics Overview</h4>
+                <h4>1️⃣ Key Metrics Overview</h4>
                 <div class="chart-grid">
                     <div class="metric-card gradient-bg-1">
                         <div class="metric-value-large" id="metricThreatScore">0</div>
@@ -142,23 +121,23 @@
                         <div class="metric-label-large">Total Detections</div>
                     </div>
                     <div class="metric-card gradient-bg-3">
-                        <div class="metric-value-large" id="metricSources">5</div>
+                        <div class="metric-value-large" id="metricSources">3</div>
                         <div class="metric-label-large">Active Sources</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 2: Source Detection Analysis -->
+            <!-- Source Detection Analysis -->
             <div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">2️⃣ Source Detection Scores</h4>
+                <h4>2️⃣ Source Detection Scores</h4>
                 <div class="chart-container">
                     <div class="bar-chart" id="barChart"></div>
                 </div>
             </div>
 
-            <!-- Section 3: Threat Severity Distribution -->
+            <!-- Threat Severity Distribution -->
             <div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">3️⃣ Threat Severity Distribution</h4>
+                <h4>3️⃣ Threat Severity Distribution</h4>
                 <div class="pie-chart" id="pieChart">
                     <div class="pie-center">
                         <div class="pie-value" id="pieValue">0</div>
@@ -181,18 +160,18 @@
                 </div>
             </div>
 
-            <!-- Section 4: Activity Timeline -->
+            <!-- Threat Activity Heatmap -->
             <div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">4️⃣ Threat Activity Heatmap (Last 7 Days)</h4>
+                <h4>4️⃣ Threat Activity Heatmap (Last 7 Days)</h4>
                 <div class="heatmap" id="heatmap"></div>
             </div>
 
-            <!-- Section 5: Detailed Analysis Results -->
+            <!-- Detailed Analysis Results -->
             <div style="margin-bottom: 24px;">
-                <h4 style="margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">5️⃣ Detailed Analysis Results</h4>
+                <h4>5️⃣ Detailed Analysis Results</h4>
                 <div class="result-box" id="resultsContainer">
                     <div class="empty-state">
-                        No analysis performed yet. Enter a target above and click "Analyze Threat" to begin.
+                        No analysis performed yet. Enter a target above and click "Start Analysis" to begin.
                     </div>
                 </div>
             </div>
@@ -204,11 +183,7 @@
                 <span class="card-title">🔗 Correlation Engine</span>
                 <span class="badge badge-info">ML-Powered</span>
             </div>
-            
-            <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px;">
-                Correlation patterns detected across multiple indicators
-            </p>
-
+            <p>Correlation patterns detected across multiple indicators</p>
             <div class="correlation-matrix" id="correlationMatrix"></div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from api_clients.abuseipdb import check_abuseipdb
 from api_clients.virustotal import check_virustotal
 from api_clients.alienvault import check_alienvault
@@ -8,15 +8,21 @@ from utils.correlation import correlate_results
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend
+CORS(app)
 
+# Serve main frontend page
+@app.route("/")
+def index():
+    return render_template("index.html")  # Make sure index.html is in templates/
+
+# API route
 @app.route("/query", methods=["POST"])
 def query_ip():
     ip = request.json.get("ip")
     if not ip:
         return jsonify({"error": "IP address required"}), 400
     
-    # Fetch data from APIs (stub/demo)
+    # Fetch data from APIs
     abuse_data = check_abuseipdb(ip)
     vt_data = check_virustotal(ip)
     av_data = check_alienvault(ip)
@@ -43,4 +49,4 @@ def query_ip():
     return jsonify(report)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='127.0.0.1',debug=True, port=5000)  
