@@ -30,5 +30,4 @@ TICE correlates data from top-tier public intelligence feeds, including:
 * ✅ **AbuseIPDB:** Gathers reports from a global community of webmasters and security analysts.
 * ✅ **VirusTotal:** Checks the IP against over 90+ antivirus scanners and blocklisting services.
 * ✅ **AlienVault OTX:** Correlates the IP with known threat campaigns and "Pulses."
-* ✅ **URLhaus:** Checks against malware blocklists.
 * *(And more...)*
