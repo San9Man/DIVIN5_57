@@ -31,8 +31,8 @@ TICE correlates data from top-tier public intelligence feeds, including:
 
 
 Team members :
-**Sanjay M**
-**Shubhod Loni**
-**Prajwal PB**
-**Ranjit Kumar Achari**
-**Shreehari K**
+* **Sanjay M**
+* **Shubhod Loni**
+* **Prajwal PB**
+* **Ranjit Kumar Achari**
+* **Shreehari K**
