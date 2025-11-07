@@ -17,7 +17,7 @@ This engine is designed to power dashboards, security playbooks (SOAR), and the 
 * **Intelligent Correlation:** Doesn't just list data. TICE calculates a composite **"Correlation Value"** (a unified risk score) based on multi-source consensus, threat type, and recency.
 * **Structured Database Output:** All findings are normalized and saved in a structured format, perfect for feeding into a database (e.g., SQLite, PostgreSQL, JSON) for historical analysis and dashboarding.
 * **Extensible:** Built in a modular way to easily add new threat intelligence sources.
-* **AI Chstbot:**  Smart Chatbot.
+* **AI Chatbot:**  Smart Interactive Chatbot.
 
 ---
 
