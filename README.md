@@ -28,3 +28,11 @@ TICE correlates data from top-tier public intelligence feeds, including:
 * ✅ **VirusTotal:** Checks the IP against over 90+ antivirus scanners and blocklisting services.
 * ✅ **AlienVault OTX:** Correlates the IP with known threat campaigns and "Pulses."
 * *(And more...)*
+
+
+Team members :
+**Sanjay M**
+**Shubhod Loni**
+**Prajwal PB**
+**Ranjit Kumar Achari**
+**Shreehari K**
