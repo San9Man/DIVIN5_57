@@ -188,31 +188,41 @@
         </div>
     </div>
     <!-- Chatbot Container -->
-<div id="uipath-chatbot">
-  <div id="chatbox"></div>
-  <input id="userInput" placeholder="Ask me about IP threats...">
-  <button onclick="sendMessage()">Send</button>
+<div class="bot-widget">
+    <p>Cyber Bot</p>
+  <iframe 
+    src="https://cloud.uipath.com/saninc/studio_/designer/05732b7e-47e8-4ffc-8bc9-e9b9849685c8?solutionId=2d8fa9eb-8281-47da-3c74-08de1d4451d2"
+    title="Cybersecurity Helpbot"
+    frameborder="0"
+    loading="lazy">
+  </iframe>
 </div>
 
-<script>
-async function sendMessage() {
-  const msg = document.getElementById('userInput').value;
-  const chatbox = document.getElementById('chatbox');
-  chatbox.innerHTML += "<div>User: " + msg + "</div>";
-  document.getElementById('userInput').value = '';
-  // Replace the URL and headers below with your UiPath agent API details:
-  const response = await fetch('https://cloud.uipath.com/saninc/studio_/designer/a2e96c3e-2b59-4734-a7e0-a5b164e92dbb?solutionId=43f2e056-4676-415a-d69a-08de1d4453f2', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_TOKEN' // if required
-    },
-    body: JSON.stringify({ message: msg })
-  });
-  const data = await response.json();
-  chatbox.innerHTML += "<div>Bot: " + data.reply + "</div>";
-}
-</script>
+
+<style>
+  .bot-widget {
+    /* --- This controls the size --- */
+    width: 100%;       /* It will be 100% wide of its container */
+    max-width: 450px;  /* But it will NOT get bigger than 450px */
+    height: 500px;     /* Give it a fixed height */
+    align-items: center;
+    /* --- This makes it look nice --- */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden; /* This makes the corners look clean */
+    
+    /* --- Optional: Center it --- */
+    /* margin: 20px auto; */
+  }
+
+  .bot-widget iframe {
+    /* --- This makes the iframe fill the container --- */
+    width: 100%;
+    height: 100%;
+    border: none; /* Redundant, but good practice */
+  }
+</style>
 
     <script src="script.js"></script>
 </body>
