@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify, send_from_directory
 from api_clients.abuseipdb import check_abuseipdb
+from flask import Flask, request, jsonify, send_from_directory
 from api_clients.virustotal import check_virustotal
 from api_clients.alienvault import check_alienvault
 from threat_scoring import calculate_score
@@ -7,6 +7,13 @@ from utils.normalization import normalize_results
 from utils.correlation import correlate_results
 from flask_cors import CORS
 import os
+try:
+    # Attempt to load .env file if python-dotenv is installed
+    from dotenv import load_dotenv  # type: ignore
+    load_dotenv()
+except Exception:
+    # python-dotenv not available; environment variables should be set externally
+    pass
 from datetime import datetime
 
 app = Flask(__name__)
