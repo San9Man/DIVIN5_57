@@ -16,9 +16,6 @@ This engine is designed to power dashboards, security playbooks (SOAR), and the 
 * **Multi-Source Aggregation:** Automatically queries a wide range of threat intelligence feeds from a single input IP.
 * **Intelligent Correlation:** Doesn't just list data. TICE calculates a composite **"Correlation Value"** (a unified risk score) based on multi-source consensus, threat type, and recency.
 * **Structured Database Output:** All findings are normalized and saved in a structured format, perfect for feeding into a database (e.g., SQLite, PostgreSQL, JSON) for historical analysis and dashboarding.
-* **Dual-Persona Ready:** The engine provides two levels of output, making it the perfect backend for an AI agent:
-    * **Public Data:** A simple, clear verdict and actionable defensive steps.
-    * **Official Data:** A deep dossier for attribution, including geolocation, ISP/ASN, ownership, and historical activity.
 * **Extensible:** Built in a modular way to easily add new threat intelligence sources.
 
 ---
@@ -31,3 +28,11 @@ TICE correlates data from top-tier public intelligence feeds, including:
 * ✅ **VirusTotal:** Checks the IP against over 90+ antivirus scanners and blocklisting services.
 * ✅ **AlienVault OTX:** Correlates the IP with known threat campaigns and "Pulses."
 * *(And more...)*
+
+
+Team members :
+* **Sanjay M**
+* **Shubhod Loni**
+* **Prajwal PB**
+* **Ranjit Kumar Achari**
+* **Shreehari K**
